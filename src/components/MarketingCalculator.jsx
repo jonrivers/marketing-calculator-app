@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Sliders, TrendingUp, BarChart2, BookOpen, Grid, HelpCircle, Info, Download, Save, Mail, ChevronRight } from 'lucide-react';
+//import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+//import { Sliders, TrendingUp, BarChart2, BookOpen, Grid, HelpCircle, Info, Download, Save, Mail, ChevronRight } from 'lucide-react';
+import { Sliders, TrendingUp, BarChart2, BookOpen, HelpCircle, Info } from 'lucide-react';
 
 // Component for the font imports
 const FontImports = () => (
