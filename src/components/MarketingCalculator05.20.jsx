@@ -1,7 +1,5 @@
-//import React, { useState, useEffect } from 'react';
 import React, { useState } from 'react';
-//import { Sliders, TrendingUp, BarChart2, BookOpen, Grid, HelpCircle, Info, Download, Save, Mail, ChevronRight } from 'lucide-react';
-import { Sliders, TrendingUp, BarChart2, BookOpen, HelpCircle, Info } from 'lucide-react';
+import { Sliders, TrendingUp, BarChart2, BookOpen, HelpCircle, Info, DollarSign, Users, UserCheck } from 'lucide-react';
 
 // Component for the font imports
 const FontImports = () => (
@@ -21,6 +19,7 @@ const MarketingCalculator = () => {
   const [mediaServiceRatio, setMediaServiceRatio] = useState('50/50');
   const [activeTab, setActiveTab] = useState('calculator');
   const [selectedIndustry, setSelectedIndustry] = useState('all');
+  const [selectedState, setSelectedState] = useState('South Carolina');
   
   // Format number with commas
   const formatNumberWithCommas = (num) => {
@@ -164,6 +163,64 @@ const MarketingCalculator = () => {
     }
   ];
 
+  // Fractional CMO cost is based on the Marketing Services value from the budget calculator
+  // This creates a dynamic connection between the calculator tab and the Fractional CMO tab
+
+  // States with cost modifiers
+  const states = [
+    { id: 'us_average', name: 'US Average', costModifier: 1.0 },
+    { id: 'south_carolina', name: 'South Carolina', costModifier: 0.85 },
+    { id: 'north_carolina', name: 'North Carolina', costModifier: 0.85 },
+    { id: 'georgia', name: 'Georgia', costModifier: 0.9 },
+    { id: 'florida', name: 'Florida', costModifier: 0.9 },
+    { id: 'california', name: 'California', costModifier: 1.35 },
+    { id: 'new_york', name: 'New York', costModifier: 1.3 },
+    { id: 'texas', name: 'Texas', costModifier: 0.95 },
+    { id: 'illinois', name: 'Illinois', costModifier: 1.05 },
+    { id: 'massachusetts', name: 'Massachusetts', costModifier: 1.25 },
+    { id: 'washington', name: 'Washington', costModifier: 1.2 },
+    { id: 'colorado', name: 'Colorado', costModifier: 1.1 },
+    { id: 'pennsylvania', name: 'Pennsylvania', costModifier: 0.95 },
+    { id: 'arizona', name: 'Arizona', costModifier: 0.9 },
+    { id: 'ohio', name: 'Ohio', costModifier: 0.8 },
+    { id: 'michigan', name: 'Michigan', costModifier: 0.85 }
+  ];
+
+  // Base salary data for full-time positions (US average)
+  const baseSalaryData = {
+    marketingVP: 170000,
+    digitalSpecialist: 75000,
+    marketingManager: 95000
+  };
+
+  // State-specific salary calculations
+  const getStateCostModifier = () => {
+    const state = states.find(s => s.name === selectedState);
+    return state ? state.costModifier : 1.0;
+  };
+
+  const calculateStateSalaries = () => {
+    const modifier = getStateCostModifier();
+    return {
+      marketingVP: Math.round(baseSalaryData.marketingVP * modifier),
+      digitalSpecialist: Math.round(baseSalaryData.digitalSpecialist * modifier),
+      marketingManager: Math.round(baseSalaryData.marketingManager * modifier)
+    };
+  };
+
+  const stateSalaries = calculateStateSalaries();
+  
+  // Calculate total full-time staff cost
+  const totalStaffCost = stateSalaries.marketingVP + stateSalaries.digitalSpecialist + stateSalaries.marketingManager;
+  
+  // Calculate savings with Fractional CMO (using dynamic serviceSpend instead of static value)
+  const savingsAmount = totalStaffCost - serviceSpend;
+  const savingsPercentage = (savingsAmount / totalStaffCost) * 100;
+  
+  // Calculate staff cost as percentage of marketing budget
+  const staffBudgetPercentage = (totalStaffCost / totalMarketingBudget) * 100;
+  const cmoBudgetPercentage = (serviceSpend / totalMarketingBudget) * 100;
+
   return (
     <div className="max-w-5xl mx-auto p-6 font-sans bg-white rounded-xl shadow-lg" style={{fontFamily: "'Lato', sans-serif"}}>
       <FontImports />
@@ -185,6 +242,17 @@ const MarketingCalculator = () => {
           >
             <Sliders className="h-5 w-5 mr-2" />
             Calculator
+          </button>
+          <button
+            className={`inline-flex items-center py-3 px-4 text-sm font-medium border-b-2 transition-colors duration-200 ${
+              activeTab === 'fractional_cmo'
+                ? 'text-blue-600 border-blue-600'
+                : 'text-gray-500 border-transparent hover:text-blue-800 hover:border-gray-300'
+            }`}
+            onClick={() => setActiveTab('fractional_cmo')}
+          >
+            <DollarSign className="h-5 w-5 mr-2" />
+            Fractional CMO
           </button>
           <button
             className={`inline-flex items-center py-3 px-4 text-sm font-medium border-b-2 transition-colors duration-200 ${
@@ -551,59 +619,283 @@ const MarketingCalculator = () => {
               </div>
             </div>
           </div>
-          
-          {/* Action Buttons 
-          <div className="flex flex-col sm:flex-row gap-4 mb-10">
-            <button className="flex-1 bg-blue-700 text-white py-3 px-6 rounded-lg hover:bg-blue-800 transition-all duration-200 font-medium flex items-center justify-center">
-              <Download className="h-5 w-5 mr-2" />
-              Download Budget Report
-            </button>
-            <button className="flex-1 border border-blue-700 text-blue-700 py-3 px-6 rounded-lg hover:bg-blue-50 transition-all duration-200 font-medium flex items-center justify-center">
-              <Save className="h-5 w-5 mr-2" />
-              Save Calculation
-            </button>
-            <button className="flex-1 border border-orange-500 text-orange-500 py-3 px-6 rounded-lg hover:bg-orange-50 transition-all duration-200 font-medium flex items-center justify-center">
-              <Mail className="h-5 w-5 mr-2" />
-              Email Results
-            </button>
-          </div>
-          */}
-          
-          {/* Topics to Explore 
+        </>
+      )}
+
+      {/* Fractional CMO Tab */}
+      {activeTab === 'fractional_cmo' && (
+        <>
           <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Topics to Explore</h2>
+            <h2 className="text-2xl font-bold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Fractional CMO vs. Full-Time Marketing Team</h2>
+            <p className="text-gray-600 mb-6">
+              Compare the cost savings of using a Fractional CMO service (equivalent to your Marketing Services budget: ${serviceSpend.toLocaleString()}/year) versus hiring a full team of marketing professionals. See how much of your marketing budget can be saved for actual campaigns and initiatives.
+            </p>
+
+            {/* State Selector */}
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>1. Select Your State</h3>
+              <p className="text-gray-600 mb-4">
+                Marketing salaries vary significantly by location. Select your state to see location-adjusted salary comparisons.
+              </p>
+              
+              <div className="flex flex-wrap gap-3 mb-4">
+                {states.map((state) => (
+                  <button
+                    key={state.id}
+                    className={`px-4 py-2 rounded-lg border transition-all duration-200 ${
+                      selectedState === state.name
+                        ? 'bg-blue-700 text-white border-blue-700'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    }`}
+                    onClick={() => setSelectedState(state.name)}
+                  >
+                    {state.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Cost Comparison */}
+            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 mb-8">
+              <h3 className="text-xl font-semibold mb-6" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>
+                Team Cost Comparison for {selectedState}
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Full Time Team */}
+                <div className="bg-gray-50 p-5 rounded-lg shadow-sm">
+                  <h4 className="text-center font-semibold mb-4 flex items-center justify-center" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>
+                    <Users className="h-5 w-5 mr-2" />
+                    Full-Time Marketing Team
+                  </h4>
+                  
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center border-b border-gray-200 pb-2">
+                      <span className="font-medium">Marketing VP/Director</span>
+                      <span className="text-gray-700">${stateSalaries.marketingVP.toLocaleString()}/year</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center border-b border-gray-200 pb-2">
+                      <span className="font-medium">Digital Marketing Specialist</span>
+                      <span className="text-gray-700">${stateSalaries.digitalSpecialist.toLocaleString()}/year</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center border-b border-gray-200 pb-2">
+                      <span className="font-medium">Marketing Manager/Strategist</span>
+                      <span className="text-gray-700">${stateSalaries.marketingManager.toLocaleString()}/year</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center pt-2">
+                      <span className="font-bold text-blue-800">Total Annual Cost</span>
+                      <span className="font-bold text-blue-800">${totalStaffCost.toLocaleString()}/year</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 text-xs text-gray-500">
+                    *Salary data adjusted for {selectedState} cost of living
+                  </div>
+                </div>
+                
+                {/* Fractional CMO */}
+                <div className="bg-blue-50 p-5 rounded-lg shadow-sm">
+                  <h4 className="text-center font-semibold mb-4 flex items-center justify-center" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>
+                    <UserCheck className="h-5 w-5 mr-2" />
+                    Fractional CMO Service
+                  </h4>
+                  
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center border-b border-blue-100 pb-2">
+                      <span className="font-medium">Annual Service Fee</span>
+                      <span className="text-gray-700">${serviceSpend.toLocaleString()}/year</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center pt-2">
+                      <span className="font-bold text-blue-800">Total Annual Cost</span>
+                      <span className="font-bold text-blue-800">${serviceSpend.toLocaleString()}/year</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8 p-4 bg-white rounded-lg border border-blue-100">
+                    <div className="text-center mb-3">
+                      <span className="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium inline-block">
+                        Your Savings: ${savingsAmount.toLocaleString()}/year
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 text-center">
+                      That's a <span className="font-bold text-green-600">{savingsPercentage.toFixed(1)}%</span> cost reduction compared to hiring a full team
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white border border-gray-100 rounded-lg p-5 shadow-sm hover:shadow-md transition-all duration-300">
-                <BarChart2 className="h-12 w-12 text-orange-500 mb-3" />
-                <h3 className="font-semibold text-lg mb-2" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>ROI Analysis</h3>
-                <p className="text-gray-700 text-sm">Explore how different marketing channels perform for your specific business model and budget allocation.</p>
-                <a href="#" className="inline-flex items-center mt-3 text-blue-600 text-sm font-medium hover:text-blue-800">
-                  Learn more <ChevronRight className="h-4 w-4 ml-1" />
-                </a>
-              </div>
+            {/* Budget Impact Visualization */}
+            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 mb-8">
+              <h3 className="text-xl font-semibold mb-5" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>
+                Impact on Your Marketing Budget
+              </h3>
               
-              <div className="bg-white border border-gray-100 rounded-lg p-5 shadow-sm hover:shadow-md transition-all duration-300">
-                <Grid className="h-12 w-12 text-orange-500 mb-3" />
-                <h3 className="font-semibold text-lg mb-2" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Competitor Benchmarks</h3>
-                <p className="text-gray-700 text-sm">See how your marketing investment compares to industry standards and competitors in your market segment.</p>
-                <a href="#" className="inline-flex items-center mt-3 text-blue-600 text-sm font-medium hover:text-blue-800">
-                  Compare now <ChevronRight className="h-4 w-4 ml-1" />
-                </a>
+              <div className="mb-6">
+                <p className="text-sm font-medium text-blue-800 mb-2">Percentage of Marketing Budget Used for Personnel</p>
+                <div className="space-y-5">
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm font-medium">Full-Time Team</span>
+                      <span className="text-sm text-gray-600">{staffBudgetPercentage.toFixed(1)}% of budget</span>
+                    </div>
+                    <div className="h-8 w-full bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-red-500" style={{ width: `${Math.min(100, staffBudgetPercentage)}%` }}></div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm font-medium">Fractional CMO</span>
+                      <span className="text-sm text-gray-600">{cmoBudgetPercentage.toFixed(1)}% of budget</span>
+                    </div>
+                    <div className="h-8 w-full bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-green-500" style={{ width: `${Math.min(100, cmoBudgetPercentage)}%` }}></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-4 bg-blue-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-blue-800 mb-2">Additional Budget for Campaigns and Initiatives</h4>
+                  <p className="text-gray-700 text-sm">
+                    By using a Fractional CMO instead of a full-time team, you free up <span className="font-bold text-green-600">${savingsAmount.toLocaleString()}/year</span> ({(savingsAmount / totalMarketingBudget * 100).toFixed(1)}% of your total marketing budget) for actual marketing campaigns and initiatives.
+                  </p>
+                </div>
               </div>
+            </div>
+            
+            {/* Benefits Comparison */}
+            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 mb-8">
+              <h3 className="text-xl font-semibold mb-5" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>
+                Feature Comparison
+              </h3>
               
-              <div className="bg-white border border-gray-100 rounded-lg p-5 shadow-sm hover:shadow-md transition-all duration-300">
-                <Sliders className="h-12 w-12 text-orange-500 mb-3" />
-                <h3 className="font-semibold text-lg mb-2" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Budget Optimization</h3>
-                <p className="text-gray-700 text-sm">Learn strategies for optimizing your marketing budget allocation throughout the fiscal year.</p>
-                <a href="#" className="inline-flex items-center mt-3 text-blue-600 text-sm font-medium hover:text-blue-800">
-                  Get tips <ChevronRight className="h-4 w-4 ml-1" />
-                </a>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-blue-800 uppercase tracking-wider" style={{fontFamily: "'Montserrat', sans-serif"}}>
+                        Feature
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-blue-800 uppercase tracking-wider" style={{fontFamily: "'Montserrat', sans-serif"}}>
+                        Full-Time Team
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-blue-800 uppercase tracking-wider" style={{fontFamily: "'Montserrat', sans-serif"}}>
+                        Fractional CMO
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Annual Cost
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-red-600 font-medium">
+                        ${totalStaffCost.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-green-600 font-medium">
+                        ${serviceSpend.toLocaleString()}
+                      </td>
+                    </tr>
+                    <tr className="bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Strategic Marketing Leadership
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Full-Time Availability
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                      </td>
+                    </tr>
+                    <tr className="bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Cross-Industry Experience
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        No HR Overhead
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      </td>
+                    </tr>
+                    <tr className="bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Scalability
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Access to Marketing Team
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
-          */}
-
         </>
       )}
       
@@ -774,6 +1066,11 @@ const MarketingCalculator = () => {
               <p className="text-gray-700 mb-2">
                 The recommended media to services ratios (ranging from 40/60 to 70/30) are derived from industry best practices and research on marketing ROI optimization. These ratios vary based on business maturity, with emerging businesses typically requiring more strategic services while established businesses with proven channels can allocate more to media.
               </p>
+              
+              <h4 className="font-semibold mb-3 mt-5" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Fractional CMO vs. Full-Time Team Comparison</h4>
+              <p className="text-gray-700 mb-2">
+                The salary data for marketing professionals is based on industry reports from the Bureau of Labor Statistics, Glassdoor, and Robert Half Salary Guide. State-specific cost adjustments are derived from cost-of-living indices from BestPlaces.net and the Council for Community and Economic Research. The Fractional CMO service cost is based on your calculated Marketing Services budget, creating a direct comparison between traditional staffing and outsourced expertise.
+              </p>
             </div>
           </div>
           
@@ -791,15 +1088,16 @@ const MarketingCalculator = () => {
         </div>
       )}
 
-      <div className="bg-gradient-to-r from-blue-700 to-blue-900 p-8 rounded-xl text-white mt-10 shadow-lg">
+      {/* CTA Box */}
+      <div className="bg-gradient-to-r from-blue-700 to-blue-900 p-8 rounded-xl text-white shadow-lg">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="mb-6 md:mb-0 md:mr-10">
-            <h3 className="text-2xl font-semibold mb-2">Need Help with Competitive Analysis?</h3>
-            <p className="opacity-90 max-w-lg">Our team can help you understand where your marketing investments should be focused compared to your industry.</p>
+            <h3 className="text-2xl font-semibold mb-2">Ready to Save ${savingsAmount.toLocaleString()} on Your Marketing Budget?</h3>
+            <p className="opacity-90 max-w-lg">Get the strategic expertise you need at a fraction of the cost with our Fractional CMO service.</p>
           </div>
           <div>
             <a href="https://riversdx.com" className="whitespace-nowrap px-8 py-3 rounded-lg bg-white text-blue-800 font-medium hover:bg-blue-50 transition-all shadow-lg">
-              Request Analysis
+              Schedule Consultation
             </a>
           </div>
         </div>
@@ -811,11 +1109,6 @@ const MarketingCalculator = () => {
           <div className="mb-4 md:mb-0">
             <p className="text-gray-500 text-sm">&copy; {new Date().getFullYear()}. All rights reserved.</p>
           </div>
-          {/*<div className="flex space-x-4">
-            <a href="#" className="text-blue-600 hover:text-blue-800 text-sm">Terms of Service</a>
-            <a href="#" className="text-blue-600 hover:text-blue-800 text-sm">Privacy Policy</a>
-            <a href="#" className="text-blue-600 hover:text-blue-800 text-sm">Contact Us</a>
-          </div>*/}
         </div>
       </footer>
     </div>

@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
 import { Sliders, TrendingUp, BarChart2, BookOpen, HelpCircle, Info, DollarSign, Users, UserCheck } from 'lucide-react';
 
-// Component for the font imports
-const FontImports = () => (
-  <style jsx global>{`
-    @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;500;600;700&display=swap');
-  `}</style>
-);
+// Component for the font imports - Using Lato
+const FontImports = () => {
+  React.useEffect(() => {
+    // Create link element for Google Fonts
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+    
+    return () => {
+      // Cleanup
+      document.head.removeChild(link);
+    };
+  }, []);
+  
+  return null;
+};
 
 const MarketingCalculator = () => {
   const [businessType, setBusinessType] = useState('B2B');
@@ -163,9 +174,6 @@ const MarketingCalculator = () => {
     }
   ];
 
-  // Fractional CMO cost is based on the Marketing Services value from the budget calculator
-  // This creates a dynamic connection between the calculator tab and the Fractional CMO tab
-
   // States with cost modifiers
   const states = [
     { id: 'us_average', name: 'US Average', costModifier: 1.0 },
@@ -222,59 +230,59 @@ const MarketingCalculator = () => {
   const cmoBudgetPercentage = (serviceSpend / totalMarketingBudget) * 100;
 
   return (
-    <div className="max-w-5xl mx-auto p-6 font-sans bg-white rounded-xl shadow-lg" style={{fontFamily: "'Lato', sans-serif"}}>
+    <div className="max-w-5xl mx-auto p-6 bg-white" style={{fontFamily: "'Lato', sans-serif"}}>
       <FontImports />
-      <header className="mb-8 text-center">
-        <h1 className="text-4xl font-bold mb-3" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Marketing Budget Calculator</h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">Optimize your marketing investment based on your business model and growth targets. Generate data-driven recommendations rooted in industry research.</p>
-      </header>
       
       {/* Navigation Tabs */}
-      <div className="mb-8 border-b border-gray-200">
+      <div className="mb-8 border-b" style={{borderColor: '#1B4551'}}>
         <div className="flex flex-wrap justify-center -mb-px">
           <button
-            className={`inline-flex items-center py-3 px-4 text-sm font-medium border-b-2 transition-colors duration-200 ${
+            className={`inline-flex items-center py-3 px-4 text-base font-medium border-b-2 transition-colors duration-200 ${
               activeTab === 'calculator'
-                ? 'text-blue-600 border-blue-600'
-                : 'text-gray-500 border-transparent hover:text-blue-800 hover:border-gray-300'
+                ? 'border-b-2 text-white bg-black'
+                : 'text-black border-transparent hover:bg-gray-100'
             }`}
+            style={{
+              borderBottomColor: activeTab === 'calculator' ? '#1B4551' : 'transparent',
+              backgroundColor: activeTab === 'calculator' ? '#1B4551' : 'transparent',
+              color: activeTab === 'calculator' ? 'white' : 'black'
+            }}
             onClick={() => setActiveTab('calculator')}
           >
             <Sliders className="h-5 w-5 mr-2" />
-            Calculator
+            Marketing Budget Calculator
           </button>
           <button
-            className={`inline-flex items-center py-3 px-4 text-sm font-medium border-b-2 transition-colors duration-200 ${
+            className={`inline-flex items-center py-3 px-4 text-base font-medium border-b-2 transition-colors duration-200 ${
               activeTab === 'fractional_cmo'
-                ? 'text-blue-600 border-blue-600'
-                : 'text-gray-500 border-transparent hover:text-blue-800 hover:border-gray-300'
+                ? 'border-b-2 text-white'
+                : 'text-black border-transparent hover:bg-gray-100'
             }`}
+            style={{
+              borderBottomColor: activeTab === 'fractional_cmo' ? '#1B4551' : 'transparent',
+              backgroundColor: activeTab === 'fractional_cmo' ? '#1B4551' : 'transparent',
+              color: activeTab === 'fractional_cmo' ? 'white' : 'black'
+            }}
             onClick={() => setActiveTab('fractional_cmo')}
           >
             <DollarSign className="h-5 w-5 mr-2" />
-            Fractional CMO
+            Fractional CMO Savings Calculator
           </button>
           <button
-            className={`inline-flex items-center py-3 px-4 text-sm font-medium border-b-2 transition-colors duration-200 ${
+            className={`inline-flex items-center py-3 px-4 text-base font-medium border-b-2 transition-colors duration-200 ${
               activeTab === 'benchmarks'
-                ? 'text-blue-600 border-blue-600'
-                : 'text-gray-500 border-transparent hover:text-blue-800 hover:border-gray-300'
+                ? 'border-b-2 text-white'
+                : 'text-black border-transparent hover:bg-gray-100'
             }`}
+            style={{
+              borderBottomColor: activeTab === 'benchmarks' ? '#1B4551' : 'transparent',
+              backgroundColor: activeTab === 'benchmarks' ? '#1B4551' : 'transparent',
+              color: activeTab === 'benchmarks' ? 'white' : 'black'
+            }}
             onClick={() => setActiveTab('benchmarks')}
           >
             <BarChart2 className="h-5 w-5 mr-2" />
             Industry Benchmarks
-          </button>
-          <button
-            className={`inline-flex items-center py-3 px-4 text-sm font-medium border-b-2 transition-colors duration-200 ${
-              activeTab === 'sources'
-                ? 'text-blue-600 border-blue-600'
-                : 'text-gray-500 border-transparent hover:text-blue-800 hover:border-gray-300'
-            }`}
-            onClick={() => setActiveTab('sources')}
-          >
-            <BookOpen className="h-5 w-5 mr-2" />
-            Sources & Methodology
           </button>
         </div>
       </div>
@@ -284,70 +292,89 @@ const MarketingCalculator = () => {
         <>
           {/* Business Type Selection */}
           <div className="mb-10">
-            <h2 className="text-xl font-semibold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>1. Select Your Business Type</h2>
+            <h2 className="text-xl font-semibold mb-4" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>1. Select Your Business Type</h2>
             <div className="flex flex-col md:flex-row gap-4">
               <button
-                className={`px-6 py-4 rounded-lg flex-1 transition-all duration-200 shadow-sm ${businessType === 'B2B' ? 'bg-blue-700 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
+                className={`px-6 py-4 rounded-lg flex-1 transition-all duration-200 shadow-sm font-medium ${businessType === 'B2B' ? 'text-white' : 'text-black hover:bg-gray-100'}`}
+                style={{
+                  backgroundColor: businessType === 'B2B' ? '#1B4551' : '#f9f9f9',
+                  border: `2px solid ${businessType === 'B2B' ? '#1B4551' : '#e5e5e5'}`
+                }}
                 onClick={() => handleBusinessTypeChange('B2B')}
               >
-                <div className="font-semibold mb-1" style={{fontFamily: "'Montserrat', sans-serif"}}>B2B (3-9%)</div>
+                <div className="font-semibold mb-1" style={{fontFamily: "'Lato', sans-serif"}}>B2B (3-9%)</div>
                 <div className="text-xs opacity-90">Business-to-Business</div>
               </button>
               <button
-                className={`px-6 py-4 rounded-lg flex-1 transition-all duration-200 shadow-sm ${businessType === 'B2C' ? 'bg-blue-700 text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
+                className={`px-6 py-4 rounded-lg flex-1 transition-all duration-200 shadow-sm font-medium ${businessType === 'B2C' ? 'text-white' : 'text-black hover:bg-gray-100'}`}
+                style={{
+                  backgroundColor: businessType === 'B2C' ? '#1B4551' : '#f9f9f9',
+                  border: `2px solid ${businessType === 'B2C' ? '#1B4551' : '#e5e5e5'}`
+                }}
                 onClick={() => handleBusinessTypeChange('B2C')}
               >
-                <div className="font-semibold mb-1" style={{fontFamily: "'Montserrat', sans-serif"}}>B2C (7-18%)</div>
+                <div className="font-semibold mb-1" style={{fontFamily: "'Lato', sans-serif"}}>B2C (7-18%)</div>
                 <div className="text-xs opacity-90">Business-to-Consumer</div>
               </button>
             </div>
-            <div className="mt-2 text-sm text-gray-600 italic flex items-center">
-              <BookOpen className="h-4 w-4 mr-1" /> 
-              Based on <a href="#" onClick={() => setActiveTab('sources')} className="text-blue-600 hover:underline mx-1">industry research</a> from CMO Survey and Gartner
+            <div className="mt-2 text-sm text-black italic flex items-center">
+              <BookOpen className="h-4 w-4 mr-1" style={{color: '#3e8c84'}} /> 
+              Based on industry research from CMO Survey and Gartner
             </div>
           </div>
 
           {/* Gross Income Input */}
           <div className="mb-10">
-            <h2 className="text-xl font-semibold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>2. Enter Your Annual Gross Revenue</h2>
+            <h2 className="text-xl font-semibold mb-4" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>2. Enter Your Annual Gross Revenue</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 p-5 rounded-lg shadow-sm">
-                <h3 className="font-medium mb-3" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Current Annual Gross Revenue</h3>
+              <div className="bg-white p-5 rounded-lg shadow-sm border-2" style={{borderColor: '#e5e5e5'}}>
+                <h3 className="font-medium mb-3" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>Current Annual Gross Revenue</h3>
                 <div className="flex items-center relative">
-                  <span className="absolute left-3 text-gray-500 font-medium">$</span>
+                  <span className="absolute left-3 text-black font-medium">$</span>
                   <input
                     type="text"
                     value={currentGrossIncomeDisplay}
                     onChange={handleCurrentGrossIncomeChange}
                     onBlur={handleCurrentGrossIncomeBlur}
-                    className="border border-gray-300 rounded-lg px-4 py-3 pl-8 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="border-2 rounded-lg px-4 py-3 pl-8 w-full focus:outline-none transition-all duration-200 text-black"
+                    style={{
+                      borderColor: '#e5e5e5',
+                      ':focus': { borderColor: '#3e8c84' }
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#3e8c84'}
+                    onBlur={(e) => { handleCurrentGrossIncomeBlur(); e.target.style.borderColor = '#e5e5e5'; }}
                     placeholder="Enter amount"
                     aria-label="Current Annual Gross Revenue in USD"
                   />
                 </div>
               </div>
-              <div className="bg-gray-50 p-5 rounded-lg shadow-sm">
-                <h3 className="font-medium mb-3" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Target Annual Gross Revenue</h3>
+              <div className="bg-white p-5 rounded-lg shadow-sm border-2" style={{borderColor: '#e5e5e5'}}>
+                <h3 className="font-medium mb-3" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>Target Annual Gross Revenue</h3>
                 <div className="flex items-center relative">
-                  <span className="absolute left-3 text-gray-500 font-medium">$</span>
+                  <span className="absolute left-3 text-black font-medium">$</span>
                   <input
                     type="text"
                     value={targetGrossIncomeDisplay}
                     onChange={handleTargetGrossIncomeChange}
                     onBlur={handleTargetGrossIncomeBlur}
-                    className="border border-gray-300 rounded-lg px-4 py-3 pl-8 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="border-2 rounded-lg px-4 py-3 pl-8 w-full focus:outline-none transition-all duration-200 text-black"
+                    style={{
+                      borderColor: '#e5e5e5'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#3e8c84'}
+                    onBlur={(e) => { handleTargetGrossIncomeBlur(); e.target.style.borderColor = '#e5e5e5'; }}
                     placeholder="Enter amount"
                     aria-label="Target Annual Gross Revenue in USD"
                   />
                 </div>
-                <div className="text-xs text-gray-500 mt-2 flex items-center">
-                  <span className="font-medium" style={{color: '#0e3e6f'}}>Growth:</span> 
+                <div className="text-xs text-black mt-2 flex items-center">
+                  <span className="font-medium" style={{color: '#1B4551'}}>Growth:</span> 
                   <span className="ml-1">${(targetGrossIncome - currentGrossIncome).toLocaleString()} ({((targetGrossIncome / currentGrossIncome - 1) * 100).toFixed(1)}%)</span>
                 </div>
               </div>
             </div>
-            <div className="mt-3 bg-blue-50 rounded-lg p-3 text-sm text-gray-700 flex items-start">
-              <Info className="h-5 w-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" />
+            <div className="mt-3 rounded-lg p-3 text-sm text-black flex items-start" style={{backgroundColor: '#f0f9ff', border: '1px solid #3e8c84'}}>
+              <Info className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" style={{color: '#3e8c84'}} />
               <div>
                 Enter your current revenue and target revenue to calculate optimal marketing investments. For growth scenarios, set your target higher than your current revenue.
               </div>
@@ -356,10 +383,10 @@ const MarketingCalculator = () => {
 
           {/* Marketing Investment Slider */}
           <div className="mb-10">
-            <h2 className="text-xl font-semibold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>3. Adjust Baseline Marketing Investment</h2>
-            <div className="bg-gray-50 p-5 rounded-lg shadow-sm">
+            <h2 className="text-xl font-semibold mb-4" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>3. Adjust Baseline Marketing Investment</h2>
+            <div className="bg-white p-5 rounded-lg shadow-sm border-2" style={{borderColor: '#e5e5e5'}}>
               <div className="flex items-center gap-4 mb-2">
-                <span className="w-8 font-medium text-blue-800">{minPercentage}%</span>
+                <span className="w-8 font-medium" style={{color: '#1B4551'}}>{minPercentage}%</span>
                 <input
                   type="range"
                   min={minPercentage}
@@ -367,24 +394,24 @@ const MarketingCalculator = () => {
                   step="0.1"
                   value={baseMarketingPercentage}
                   onChange={(e) => setBaseMarketingPercentage(Number(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  className="w-full h-2 rounded-lg appearance-none cursor-pointer"
                   style={{
-                    background: `linear-gradient(to right, #1e40af 0%, #1e40af ${(baseMarketingPercentage - minPercentage) / (maxPercentage - minPercentage) * 100}%, #E5E7EB ${(baseMarketingPercentage - minPercentage) / (maxPercentage - minPercentage) * 100}%, #E5E7EB 100%)`
+                    background: `linear-gradient(to right, #3e8c84 0%, #3e8c84 ${(baseMarketingPercentage - minPercentage) / (maxPercentage - minPercentage) * 100}%, #e5e5e5 ${(baseMarketingPercentage - minPercentage) / (maxPercentage - minPercentage) * 100}%, #e5e5e5 100%)`
                   }}
                 />
-                <span className="w-8 font-medium text-blue-800">{maxPercentage}%</span>
+                <span className="w-8 font-medium" style={{color: '#1B4551'}}>{maxPercentage}%</span>
               </div>
               <div className="text-center mt-3">
-                <span className="px-4 py-2 rounded-full bg-blue-700 text-white font-medium inline-block">
+                <span className="px-4 py-2 rounded-full text-white font-medium inline-block" style={{backgroundColor: '#1B4551'}}>
                   {baseMarketingPercentage.toFixed(1)}%
                 </span>
                 {!isBaselineMaxed && (
-                  <div className="mt-3 text-sm text-orange-600 font-medium">
+                  <div className="mt-3 text-sm font-medium" style={{color: '#3e8c84'}}>
                     Increase to {maxPercentage}% to unlock growth strategy
                   </div>
                 )}
                 {isBaselineMaxed && (
-                  <div className="mt-3 text-sm text-green-600 font-medium flex items-center justify-center">
+                  <div className="mt-3 text-sm font-medium flex items-center justify-center" style={{color: '#3e8c84'}}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
@@ -392,7 +419,7 @@ const MarketingCalculator = () => {
                   </div>
                 )}
               </div>
-              <div className="mt-4 text-sm text-gray-600">
+              <div className="mt-4 text-sm text-black">
                 {businessType === 'B2B' 
                   ? 'B2B companies typically invest 3-9% of revenue in marketing. Setting investment at the maximum level (9%) indicates prioritizing marketing as a growth driver.'
                   : 'B2C companies typically invest 7-18% of revenue in marketing. Setting investment at the maximum level (18%) indicates prioritizing marketing as a growth driver.'
@@ -403,36 +430,36 @@ const MarketingCalculator = () => {
           
           {/* Growth Strategy Slider */}
           <div className={`mb-10 ${!isBaselineMaxed ? 'opacity-60' : ''}`}>
-            <h2 className="text-xl font-semibold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>4. Select Growth Strategy</h2>
-            <div className="bg-gray-50 p-5 rounded-lg shadow-sm">
+            <h2 className="text-xl font-semibold mb-4" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>4. Select Growth Strategy</h2>
+            <div className="bg-white p-5 rounded-lg shadow-sm border-2" style={{borderColor: '#e5e5e5'}}>
               {!isBaselineMaxed ? (
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-4">
+                <div className="p-4 rounded-lg border-2 mb-4" style={{backgroundColor: '#fff3cd', borderColor: '#3e8c84'}}>
                   <div className="flex items-center mb-2">
-                    <TrendingUp className="h-5 w-5 text-orange-500 mr-2" />
-                    <span className="text-gray-700 font-medium" style={{fontFamily: "'Montserrat', sans-serif"}}>Growth Strategy Locked</span>
+                    <TrendingUp className="h-5 w-5 mr-2" style={{color: '#3e8c84'}} />
+                    <span className="text-black font-medium" style={{fontFamily: "'Lato', sans-serif"}}>Growth Strategy Locked</span>
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-black">
                     Invest more in your baseline marketing (increase to {businessType === 'B2B' ? '9%' : '18%'}) to enable growth recommendations.
                   </p>
                 </div>
               ) : (
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
+                <div className="p-4 rounded-lg border-2 mb-4" style={{backgroundColor: '#f0f9ff', borderColor: '#3e8c84'}}>
                   <div className="flex items-center mb-2">
-                    <TrendingUp className="h-5 w-5 text-blue-700 mr-2" />
-                    <span className="text-gray-700 font-medium" style={{fontFamily: "'Montserrat', sans-serif"}}>Growth Investment Strategy</span>
+                    <TrendingUp className="h-5 w-5 mr-2" style={{color: '#1B4551'}} />
+                    <span className="text-black font-medium" style={{fontFamily: "'Lato', sans-serif"}}>Growth Investment Strategy</span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">
+                  <p className="text-sm text-black mb-2">
                     Additional investment applied to the difference between current and target income.
                   </p>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-black">
                     Current difference: <span className="font-medium">${incomeDifference.toLocaleString()}</span> × {growthPercentage}% = 
-                    <span className="font-medium text-blue-600 ml-1">${additionalGrowthInvestment.toLocaleString()}</span> additional investment
+                    <span className="font-medium ml-1" style={{color: '#3e8c84'}}>${additionalGrowthInvestment.toLocaleString()}</span> additional investment
                   </div>
                 </div>
               )}
               
               <div className="flex items-center gap-4 mb-2">
-                <span className="w-24 text-sm font-medium text-gray-600">Conservative</span>
+                <span className="w-24 text-sm font-medium text-black">Conservative</span>
                 <input
                   type="range"
                   min={1}
@@ -440,17 +467,17 @@ const MarketingCalculator = () => {
                   step={1}
                   value={growthStrategy}
                   onChange={(e) => setGrowthStrategy(Number(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  className="w-full h-2 rounded-lg appearance-none cursor-pointer"
                   style={{
-                    background: isBaselineMaxed ? `linear-gradient(to right, #1e40af 0%, #1e40af ${(growthStrategy - 1) / 4 * 100}%, #E5E7EB ${(growthStrategy - 1) / 4 * 100}%, #E5E7EB 100%)` : 'linear-gradient(to right, #E5E7EB 0%, #E5E7EB 100%)'
+                    background: isBaselineMaxed ? `linear-gradient(to right, #3e8c84 0%, #3e8c84 ${(growthStrategy - 1) / 4 * 100}%, #e5e5e5 ${(growthStrategy - 1) / 4 * 100}%, #e5e5e5 100%)` : 'linear-gradient(to right, #e5e5e5 0%, #e5e5e5 100%)'
                   }}
                   disabled={!isBaselineMaxed}
                 />
-                <span className="w-24 text-sm text-right font-medium text-gray-600">Aggressive</span>
+                <span className="w-24 text-sm text-right font-medium text-black">Aggressive</span>
               </div>
               
               <div className="text-center mt-3">
-                <span className={`px-4 py-2 rounded-full ${isBaselineMaxed ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-600'} font-medium inline-block`}>
+                <span className={`px-4 py-2 rounded-full font-medium inline-block ${isBaselineMaxed ? 'text-white' : 'text-black'}`} style={{backgroundColor: isBaselineMaxed ? '#1B4551' : '#e5e5e5'}}>
                   Level {growthStrategy}: {growthStrategy === 1 ? 'No Additional Investment (0%)' : 
                                    growthStrategy === 2 ? 'Conservative (5%)' : 
                                    growthStrategy === 3 ? 'Balanced (12.5%)' : 
@@ -458,11 +485,11 @@ const MarketingCalculator = () => {
                 </span>
               </div>
               
-              <div className="text-center mt-3 text-blue-800 font-medium">
+              <div className="text-center mt-3 font-medium" style={{color: '#1B4551'}}>
                 {isBaselineMaxed ? (
                   <>
                     Effective Target Investment: {effectiveTargetPercentage.toFixed(2)}% 
-                    <div className="text-xs text-gray-600 mt-1">
+                    <div className="text-xs text-black mt-1">
                       ({baseMarketingPercentage.toFixed(1)}% base + {((additionalGrowthInvestment / targetGrossIncome) * 100).toFixed(2)}% growth adjustment)
                     </div>
                   </>
@@ -475,120 +502,141 @@ const MarketingCalculator = () => {
 
           {/* Media/Service Ratio */}
           <div className="mb-10">
-            <h2 className="text-xl font-semibold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>5. Select Media Spend / Marketing Services Ratio</h2>
-            <div className="bg-gray-50 p-5 rounded-lg shadow-sm">
-              <div className="text-sm text-gray-600 mb-4 flex items-center">
-                <HelpCircle className="h-4 w-4 text-blue-600 mr-1" /> 
+            <h2 className="text-xl font-semibold mb-4" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>5. Select Media Spend / Marketing Services Ratio</h2>
+            <div className="bg-white p-5 rounded-lg shadow-sm border-2" style={{borderColor: '#e5e5e5'}}>
+              <div className="text-sm text-black mb-4 flex items-center">
+                <HelpCircle className="h-4 w-4 mr-1" style={{color: '#3e8c84'}} /> 
                 Media spend represents ad dollars, while marketing services covers strategy, creative, and implementation
               </div>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div 
-                  className={`border p-4 rounded-lg text-center cursor-pointer transition-all duration-200 hover:shadow-md ${mediaServiceRatio === '40/60' ? 'bg-blue-700 border-blue-700 text-white' : 'border-gray-200 bg-white'}`}
+                  className={`border-2 p-4 rounded-lg text-center cursor-pointer transition-all duration-200 hover:shadow-md ${mediaServiceRatio === '40/60' ? 'text-white' : 'text-black'}`}
+                  style={{
+                    backgroundColor: mediaServiceRatio === '40/60' ? '#1B4551' : 'white',
+                    borderColor: mediaServiceRatio === '40/60' ? '#1B4551' : '#e5e5e5'
+                  }}
                   onClick={() => setMediaServiceRatio('40/60')}
                 >
-                  <div className="font-semibold" style={{fontFamily: "'Montserrat', sans-serif"}}>40% / 60%</div>
-                  <div className="text-sm opacity-90">Less Media / More Services</div>
-                  <div className={`mt-2 text-xs border-t pt-2 ${mediaServiceRatio === '40/60' ? 'border-gray-400 opacity-90' : 'border-gray-200 text-gray-600'}`}>
+                  <div className="font-semibold" style={{fontFamily: "'Lato', sans-serif"}}>40% / 60%</div>
+                  <div className="text-sm opacity-90">Less Media / More Service</div>
+                  <div className={`mt-2 text-xs border-t pt-2 ${mediaServiceRatio === '40/60' ? 'border-white opacity-90' : 'border-gray-200 text-black'}`}>
                     Ideal for businesses needing emphasized strategic and operational oversight.
                   </div>
                 </div>
                 
                 <div 
-                  className={`border p-4 rounded-lg text-center cursor-pointer transition-all duration-200 hover:shadow-md ${mediaServiceRatio === '50/50' ? 'bg-blue-700 border-blue-700 text-white' : 'border-gray-200 bg-white'}`}
+                  className={`border-2 p-4 rounded-lg text-center cursor-pointer transition-all duration-200 hover:shadow-md ${mediaServiceRatio === '50/50' ? 'text-white' : 'text-black'}`}
+                  style={{
+                    backgroundColor: mediaServiceRatio === '50/50' ? '#1B4551' : 'white',
+                    borderColor: mediaServiceRatio === '50/50' ? '#1B4551' : '#e5e5e5'
+                  }}
                   onClick={() => setMediaServiceRatio('50/50')}
                 >
-                  <div className="font-semibold" style={{fontFamily: "'Montserrat', sans-serif"}}>50% / 50%</div>
+                  <div className="font-semibold" style={{fontFamily: "'Lato', sans-serif"}}>50% / 50%</div>
                   <div className="text-sm opacity-90">Balanced Approach</div>
-                  <div className={`mt-2 text-xs border-t pt-2 ${mediaServiceRatio === '50/50' ? 'border-gray-400 opacity-90' : 'border-gray-200 text-gray-600'}`}>
+                  <div className={`mt-2 text-xs border-t pt-2 ${mediaServiceRatio === '50/50' ? 'border-white opacity-90' : 'border-gray-200 text-black'}`}>
                     A perfect split between ad dollars and marketing strategy/service.
                   </div>
                 </div>
                 
                 <div 
-                  className={`border p-4 rounded-lg text-center cursor-pointer transition-all duration-200 hover:shadow-md ${mediaServiceRatio === '60/40' ? 'bg-blue-700 border-blue-700 text-white' : 'border-gray-200 bg-white'}`}
+                  className={`border-2 p-4 rounded-lg text-center cursor-pointer transition-all duration-200 hover:shadow-md ${mediaServiceRatio === '60/40' ? 'text-white' : 'text-black'}`}
+                  style={{
+                    backgroundColor: mediaServiceRatio === '60/40' ? '#1B4551' : 'white',
+                    borderColor: mediaServiceRatio === '60/40' ? '#1B4551' : '#e5e5e5'
+                  }}
                   onClick={() => setMediaServiceRatio('60/40')}
                 >
-                  <div className="font-semibold" style={{fontFamily: "'Montserrat', sans-serif"}}>60% / 40%</div>
-                  <div className="text-sm opacity-90">More Media / Less Services</div>
-                  <div className={`mt-2 text-xs border-t pt-2 ${mediaServiceRatio === '60/40' ? 'border-gray-400 opacity-90' : 'border-gray-200 text-gray-600'}`}>
+                  <div className="font-semibold" style={{fontFamily: "'Lato', sans-serif"}}>60% / 40%</div>
+                  <div className="text-sm opacity-90">More Media / Less Service</div>
+                  <div className={`mt-2 text-xs border-t pt-2 ${mediaServiceRatio === '60/40' ? 'border-white opacity-90' : 'border-gray-200 text-black'}`}>
                     A more media-heavy approach, with less devoted to strategy and oversight.
                   </div>
                 </div>
                 
                 <div 
-                  className={`border p-4 rounded-lg text-center transition-all duration-200 ${targetGrossIncome < 500000 ? 'opacity-50 cursor-not-allowed bg-gray-50' : mediaServiceRatio === '70/30' ? 'bg-blue-700 border-blue-700 text-white cursor-pointer hover:shadow-md' : 'border-gray-200 bg-white cursor-pointer hover:shadow-md'}`}
+                  className={`border-2 p-4 rounded-lg text-center transition-all duration-200 ${targetGrossIncome < 500000 ? 'opacity-50 cursor-not-allowed bg-gray-50' : mediaServiceRatio === '70/30' ? 'text-white cursor-pointer hover:shadow-md' : 'text-black cursor-pointer hover:shadow-md'}`}
+                  style={{
+                    backgroundColor: targetGrossIncome >= 500000 && mediaServiceRatio === '70/30' ? '#1B4551' : targetGrossIncome < 500000 ? '#f9f9f9' : 'white',
+                    borderColor: targetGrossIncome >= 500000 && mediaServiceRatio === '70/30' ? '#1B4551' : '#e5e5e5'
+                  }}
                   onClick={() => targetGrossIncome >= 500000 && setMediaServiceRatio('70/30')}
                 >
-                  <div className="font-semibold" style={{fontFamily: "'Montserrat', sans-serif"}}>70% / 30%</div>
+                  <div className="font-semibold" style={{fontFamily: "'Lato', sans-serif"}}>70% / 30%</div>
                   <div className="text-sm opacity-90">Heavy Media Focus</div>
-                  <div className={`mt-2 text-xs border-t pt-2 ${mediaServiceRatio === '70/30' ? 'border-gray-400 opacity-90' : 'border-gray-200 text-gray-600'}`}>
+                  <div className={`mt-2 text-xs border-t pt-2 ${mediaServiceRatio === '70/30' ? 'border-white opacity-90' : 'border-gray-200 text-black'}`}>
                     For mature, paid-media heavy businesses that need little to no strategic oversight.
                   </div>
-                  {targetGrossIncome < 500000 && <div className="text-xs text-orange-500 mt-1">Requires $500k+ target revenue</div>}
+                  {targetGrossIncome < 500000 && <div className="text-xs mt-1" style={{color: '#3e8c84'}}>Requires $500k+ target revenue</div>}
                 </div>
               </div>
-              <div className="mt-2 text-sm text-gray-600 italic flex items-center">
-                <BookOpen className="h-4 w-4 mr-1" /> 
-                Ratios based on <a href="#" onClick={() => setActiveTab('sources')} className="text-blue-600 hover:underline mx-1">industry best practices</a> for marketing budget allocation
+              <div className="mt-2 text-sm text-black italic flex items-center">
+                <BookOpen className="h-4 w-4 mr-1" style={{color: '#3e8c84'}} /> 
+                Ratios based on industry best practices for marketing budget allocation
               </div>
             </div>
           </div>
 
           {/* Results Section */}
           <div className="mb-10">
-            <h2 className="text-xl font-semibold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Your Recommended Marketing Budget</h2>
+            <h2 className="text-xl font-semibold mb-4" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>Your Recommended Marketing Budget</h2>
             
-            <div className="mb-8 bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <div className="mb-8 bg-white p-6 rounded-xl shadow-md border-2" style={{borderColor: '#e5e5e5'}}>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gray-50 p-5 rounded-lg shadow-sm text-center relative overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-blue-700"></div>
-                  <div className="text-blue-800 mb-1 font-medium" style={{fontFamily: "'Montserrat', sans-serif"}}>Total Marketing Budget</div>
-                  <div className="text-3xl font-bold text-blue-800">${totalMarketingBudget.toLocaleString()}</div>
-                  <div className="text-sm text-gray-500">{baseMarketingPercentage.toFixed(1)}% base + growth investment</div>
-                  <div className="mt-2 text-xs flex justify-between text-gray-500 px-2">
+                <div className="bg-white p-5 rounded-lg shadow-sm text-center relative overflow-hidden border-2" style={{borderColor: '#e5e5e5'}}>
+                  <div className="absolute top-0 left-0 right-0 h-1" style={{backgroundColor: '#1B4551'}}></div>
+                  <div className="mb-1 font-medium" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>Total Marketing Budget</div>
+                  <div className="text-3xl font-bold" style={{color: '#1B4551'}}>${totalMarketingBudget.toLocaleString()}</div>
+                  <div className="text-sm text-black">{baseMarketingPercentage.toFixed(1)}% base + growth investment</div>
+                  <div className="mt-2 text-xs flex justify-between text-black px-2">
                     <span>Base: ${baseMarketingBudget.toLocaleString()}</span>
                     <span>+</span>
                     <span>Growth: ${additionalGrowthInvestment.toLocaleString()}</span>
                   </div>
                 </div>
                 
-                <div className="bg-gray-50 p-5 rounded-lg shadow-sm text-center relative overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-orange-500"></div>
-                  <div className="text-blue-800 mb-1 font-medium" style={{fontFamily: "'Montserrat', sans-serif"}}>Media Spend</div>
-                  <div className="text-3xl font-bold text-orange-500">${mediaSpend.toLocaleString()}</div>
-                  <div className="text-sm text-gray-500">{mediaServiceRatio.split('/')[0]}% of Marketing Budget</div>
+                <div className="bg-white p-5 rounded-lg shadow-sm text-center relative overflow-hidden border-2" style={{borderColor: '#e5e5e5'}}>
+                  <div className="absolute top-0 left-0 right-0 h-1" style={{backgroundColor: '#3e8c84'}}></div>
+                  <div className="mb-1 font-medium" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>Media Spend</div>
+                  <div className="text-3xl font-bold" style={{color: '#3e8c84'}}>${mediaSpend.toLocaleString()}</div>
+                  <div className="text-sm text-black">{mediaServiceRatio.split('/')[0]}% of Marketing Budget</div>
                 </div>
                 
-                <div className="bg-gray-50 p-5 rounded-lg shadow-sm text-center relative overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-blue-700"></div>
-                  <div className="text-blue-800 mb-1 font-medium" style={{fontFamily: "'Montserrat', sans-serif"}}>Marketing Services</div>
-                  <div className="text-3xl font-bold text-blue-800">${serviceSpend.toLocaleString()}</div>
-                  <div className="text-sm text-gray-500">{mediaServiceRatio.split('/')[1]}% of Marketing Budget</div>
+                <div className="bg-white p-5 rounded-lg shadow-sm text-center relative overflow-hidden border-2" style={{borderColor: '#e5e5e5'}}>
+                  <div className="absolute top-0 left-0 right-0 h-1" style={{backgroundColor: '#1B4551'}}></div>
+                  <div className="mb-1 font-medium" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>Marketing Services</div>
+                  <div className="text-3xl font-bold" style={{color: '#1B4551'}}>${serviceSpend.toLocaleString()}</div>
+                  <div className="text-sm text-black">{mediaServiceRatio.split('/')[1]}% of Marketing Budget</div>
                 </div>
               </div>
             </div>
             
-            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <div className="bg-white p-6 rounded-xl shadow-md border-2" style={{borderColor: '#e5e5e5'}}>
               <div className="flex justify-between items-center mb-5">
-                <h3 className="font-semibold" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Budget Allocation Visualization</h3>
-                <span className="text-xs text-gray-500">Based on {effectiveTargetPercentage.toFixed(2)}% of target revenue</span>
+                <h3 className="font-semibold" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>Budget Allocation Visualization</h3>
+                <span className="text-xs text-black">Based on {effectiveTargetPercentage.toFixed(2)}% of target revenue</span>
               </div>
               
               <div className="mb-6">
-                <p className="text-sm font-medium text-blue-800 mb-2">Marketing Budget Components</p>
-                <div className="h-10 w-full bg-gray-200 rounded-full overflow-hidden relative">
-                  <div className="h-full bg-blue-700 flex items-center pl-3 text-xs text-white"
-                       style={{ width: `${baseMarketingBudget / totalMarketingBudget * 100}%` }}>
+                <p className="text-sm font-medium mb-2" style={{color: '#1B4551'}}>Marketing Budget Components</p>
+                <div className="h-10 w-full rounded-full overflow-hidden relative" style={{backgroundColor: '#e5e5e5'}}>
+                  <div className="h-full flex items-center pl-3 text-xs text-white" style={{ 
+                    width: `${baseMarketingBudget / totalMarketingBudget * 100}%`, 
+                    backgroundColor: '#1B4551' 
+                  }}>
                     Base Budget
                   </div>
                   {additionalGrowthInvestment > 0 && (
-                    <div className="h-full bg-orange-500 flex items-center pl-3 text-xs text-white absolute top-0"
-                         style={{ width: `${additionalGrowthInvestment / totalMarketingBudget * 100}%`, left: `${baseMarketingBudget / totalMarketingBudget * 100}%` }}>
+                    <div className="h-full flex items-center pl-3 text-xs text-white absolute top-0" style={{ 
+                      width: `${additionalGrowthInvestment / totalMarketingBudget * 100}%`, 
+                      left: `${baseMarketingBudget / totalMarketingBudget * 100}%`,
+                      backgroundColor: '#3e8c84'
+                    }}>
                       Growth Investment
                     </div>
                   )}
                 </div>
-                <div className="flex justify-between text-xs mt-1 text-gray-600">
+                <div className="flex justify-between text-xs mt-1 text-black">
                   <span>0%</span>
                   <span>Total Marketing Budget</span>
                   <span>100%</span>
@@ -596,26 +644,32 @@ const MarketingCalculator = () => {
               </div>
               
               <div className="mt-6">
-                <p className="text-sm font-medium text-blue-800 mb-2">Media / Services Split</p>
-                <div className="h-10 w-full bg-gray-200 rounded-full overflow-hidden flex">
+                <p className="text-sm font-medium mb-2" style={{color: '#1B4551'}}>Media / Service Split</p>
+                <div className="h-10 w-full rounded-full overflow-hidden flex">
                   <div 
-                    className="h-full bg-orange-500 flex items-center justify-center text-xs text-white font-medium"
-                    style={{ width: `${parseInt(mediaServiceRatio.split('/')[0])}%` }}
+                    className="h-full flex items-center justify-center text-xs text-white font-medium"
+                    style={{ 
+                      width: `${parseInt(mediaServiceRatio.split('/')[0])}%`,
+                      backgroundColor: '#3e8c84'
+                    }}
                   >
                     Media {mediaServiceRatio.split('/')[0]}%
                   </div>
                   <div 
-                    className="h-full bg-blue-700 flex items-center justify-center text-xs text-white font-medium"
-                    style={{ width: `${parseInt(mediaServiceRatio.split('/')[1])}%` }}
+                    className="h-full flex items-center justify-center text-xs text-white font-medium"
+                    style={{ 
+                      width: `${parseInt(mediaServiceRatio.split('/')[1])}%`,
+                      backgroundColor: '#1B4551'
+                    }}
                   >
-                    Services {mediaServiceRatio.split('/')[1]}%
+                    Service {mediaServiceRatio.split('/')[1]}%
                   </div>
                 </div>
               </div>
             
-              <div className="mt-4 text-sm text-gray-600 italic flex items-center">
-                <BookOpen className="h-4 w-4 mr-1" /> 
-                These recommendations are backed by <a href="#" onClick={() => setActiveTab('sources')} className="text-blue-600 hover:underline mx-1">industry research</a> from top marketing organizations
+              <div className="mt-4 text-sm text-black italic flex items-center">
+                <BookOpen className="h-4 w-4 mr-1" style={{color: '#3e8c84'}} /> 
+                These recommendations are backed by industry research from top marketing organizations
               </div>
             </div>
           </div>
@@ -626,15 +680,15 @@ const MarketingCalculator = () => {
       {activeTab === 'fractional_cmo' && (
         <>
           <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Fractional CMO vs. Full-Time Marketing Team</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-2xl font-bold mb-4" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>Fractional CMO vs. Full-Time Marketing Team</h2>
+            <p className="text-black mb-6">
               Compare the cost savings of using a Fractional CMO service (equivalent to your Marketing Services budget: ${serviceSpend.toLocaleString()}/year) versus hiring a full team of marketing professionals. See how much of your marketing budget can be saved for actual campaigns and initiatives.
             </p>
 
             {/* State Selector */}
             <div className="mb-8">
-              <h3 className="text-xl font-semibold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>1. Select Your State</h3>
-              <p className="text-gray-600 mb-4">
+              <h3 className="text-xl font-semibold mb-4" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>1. Select Your State</h3>
+              <p className="text-black mb-4">
                 Marketing salaries vary significantly by location. Select your state to see location-adjusted salary comparisons.
               </p>
               
@@ -642,11 +696,15 @@ const MarketingCalculator = () => {
                 {states.map((state) => (
                   <button
                     key={state.id}
-                    className={`px-4 py-2 rounded-lg border transition-all duration-200 ${
+                    className={`px-4 py-2 rounded-lg border-2 transition-all duration-200 font-medium ${
                       selectedState === state.name
-                        ? 'bg-blue-700 text-white border-blue-700'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        ? 'text-white'
+                        : 'text-black hover:bg-gray-100'
                     }`}
+                    style={{
+                      backgroundColor: selectedState === state.name ? '#1B4551' : 'white',
+                      borderColor: selectedState === state.name ? '#1B4551' : '#e5e5e5'
+                    }}
                     onClick={() => setSelectedState(state.name)}
                   >
                     {state.name}
@@ -656,73 +714,73 @@ const MarketingCalculator = () => {
             </div>
 
             {/* Cost Comparison */}
-            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 mb-8">
-              <h3 className="text-xl font-semibold mb-6" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>
+            <div className="bg-white p-6 rounded-xl shadow-md border-2 mb-8" style={{borderColor: '#e5e5e5'}}>
+              <h3 className="text-xl font-semibold mb-6" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>
                 Team Cost Comparison for {selectedState}
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Full Time Team */}
-                <div className="bg-gray-50 p-5 rounded-lg shadow-sm">
-                  <h4 className="text-center font-semibold mb-4 flex items-center justify-center" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>
+                <div className="bg-white p-5 rounded-lg shadow-sm border-2" style={{borderColor: '#e5e5e5'}}>
+                  <h4 className="text-center font-semibold mb-4 flex items-center justify-center" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>
                     <Users className="h-5 w-5 mr-2" />
                     Full-Time Marketing Team
                   </h4>
                   
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center border-b border-gray-200 pb-2">
-                      <span className="font-medium">Marketing VP/Director</span>
-                      <span className="text-gray-700">${stateSalaries.marketingVP.toLocaleString()}/year</span>
+                    <div className="flex justify-between items-center border-b pb-2" style={{borderColor: '#e5e5e5'}}>
+                      <span className="font-medium text-black">Marketing VP/Director</span>
+                      <span className="text-black">${stateSalaries.marketingVP.toLocaleString()}/year</span>
                     </div>
                     
-                    <div className="flex justify-between items-center border-b border-gray-200 pb-2">
-                      <span className="font-medium">Digital Marketing Specialist</span>
-                      <span className="text-gray-700">${stateSalaries.digitalSpecialist.toLocaleString()}/year</span>
+                    <div className="flex justify-between items-center border-b pb-2" style={{borderColor: '#e5e5e5'}}>
+                      <span className="font-medium text-black">Digital Marketing Specialist</span>
+                      <span className="text-black">${stateSalaries.digitalSpecialist.toLocaleString()}/year</span>
                     </div>
                     
-                    <div className="flex justify-between items-center border-b border-gray-200 pb-2">
-                      <span className="font-medium">Marketing Manager/Strategist</span>
-                      <span className="text-gray-700">${stateSalaries.marketingManager.toLocaleString()}/year</span>
+                    <div className="flex justify-between items-center border-b pb-2" style={{borderColor: '#e5e5e5'}}>
+                      <span className="font-medium text-black">Marketing Manager/Strategist</span>
+                      <span className="text-black">${stateSalaries.marketingManager.toLocaleString()}/year</span>
                     </div>
                     
                     <div className="flex justify-between items-center pt-2">
-                      <span className="font-bold text-blue-800">Total Annual Cost</span>
-                      <span className="font-bold text-blue-800">${totalStaffCost.toLocaleString()}/year</span>
+                      <span className="font-bold" style={{color: '#1B4551'}}>Total Annual Cost</span>
+                      <span className="font-bold" style={{color: '#1B4551'}}>${totalStaffCost.toLocaleString()}/year</span>
                     </div>
                   </div>
                   
-                  <div className="mt-4 text-xs text-gray-500">
+                  <div className="mt-4 text-xs text-black">
                     *Salary data adjusted for {selectedState} cost of living
                   </div>
                 </div>
                 
                 {/* Fractional CMO */}
-                <div className="bg-blue-50 p-5 rounded-lg shadow-sm">
-                  <h4 className="text-center font-semibold mb-4 flex items-center justify-center" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>
+                <div className="p-5 rounded-lg shadow-sm border-2" style={{backgroundColor: '#f0f9ff', borderColor: '#3e8c84'}}>
+                  <h4 className="text-center font-semibold mb-4 flex items-center justify-center" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>
                     <UserCheck className="h-5 w-5 mr-2" />
                     Fractional CMO Service
                   </h4>
                   
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center border-b border-blue-100 pb-2">
-                      <span className="font-medium">Annual Service Fee</span>
-                      <span className="text-gray-700">${serviceSpend.toLocaleString()}/year</span>
+                    <div className="flex justify-between items-center border-b pb-2" style={{borderColor: '#3e8c84'}}>
+                      <span className="font-medium text-black">Annual Service Fee</span>
+                      <span className="text-black">${serviceSpend.toLocaleString()}/year</span>
                     </div>
                     
                     <div className="flex justify-between items-center pt-2">
-                      <span className="font-bold text-blue-800">Total Annual Cost</span>
-                      <span className="font-bold text-blue-800">${serviceSpend.toLocaleString()}/year</span>
+                      <span className="font-bold" style={{color: '#1B4551'}}>Total Annual Cost</span>
+                      <span className="font-bold" style={{color: '#1B4551'}}>${serviceSpend.toLocaleString()}/year</span>
                     </div>
                   </div>
                   
-                  <div className="mt-8 p-4 bg-white rounded-lg border border-blue-100">
+                  <div className="mt-8 p-4 bg-white rounded-lg border-2" style={{borderColor: '#3e8c84'}}>
                     <div className="text-center mb-3">
-                      <span className="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium inline-block">
+                      <span className="px-4 py-2 rounded-full text-white font-medium inline-block" style={{backgroundColor: '#3e8c84'}}>
                         Your Savings: ${savingsAmount.toLocaleString()}/year
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 text-center">
-                      That's a <span className="font-bold text-green-600">{savingsPercentage.toFixed(1)}%</span> cost reduction compared to hiring a full team
+                    <p className="text-sm text-black text-center">
+                      That's a <span className="font-bold" style={{color: '#3e8c84'}}>{savingsPercentage.toFixed(1)}%</span> cost reduction compared to hiring a full team
                     </p>
                   </div>
                 </div>
@@ -730,163 +788,169 @@ const MarketingCalculator = () => {
             </div>
             
             {/* Budget Impact Visualization */}
-            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 mb-8">
-              <h3 className="text-xl font-semibold mb-5" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>
+            <div className="bg-white p-6 rounded-xl shadow-md border-2 mb-8" style={{borderColor: '#e5e5e5'}}>
+              <h3 className="text-xl font-semibold mb-5" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>
                 Impact on Your Marketing Budget
               </h3>
               
               <div className="mb-6">
-                <p className="text-sm font-medium text-blue-800 mb-2">Percentage of Marketing Budget Used for Personnel</p>
+                <p className="text-sm font-medium mb-2" style={{color: '#1B4551'}}>Percentage of Marketing Budget Used for Personnel</p>
                 <div className="space-y-5">
                   <div>
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium">Full-Time Team</span>
-                      <span className="text-sm text-gray-600">{staffBudgetPercentage.toFixed(1)}% of budget</span>
+                      <span className="text-sm font-medium text-black">Full-Time Team</span>
+                      <span className="text-sm text-black">{staffBudgetPercentage.toFixed(1)}% of budget</span>
                     </div>
-                    <div className="h-8 w-full bg-gray-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-red-500" style={{ width: `${Math.min(100, staffBudgetPercentage)}%` }}></div>
+                    <div className="h-8 w-full rounded-full overflow-hidden" style={{backgroundColor: '#e5e5e5'}}>
+                      <div className="h-full" style={{ 
+                        width: `${Math.min(100, staffBudgetPercentage)}%`,
+                        backgroundColor: '#dc2626'
+                      }}></div>
                     </div>
                   </div>
                   
                   <div>
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium">Fractional CMO</span>
-                      <span className="text-sm text-gray-600">{cmoBudgetPercentage.toFixed(1)}% of budget</span>
+                      <span className="text-sm font-medium text-black">Fractional CMO</span>
+                      <span className="text-sm text-black">{cmoBudgetPercentage.toFixed(1)}% of budget</span>
                     </div>
-                    <div className="h-8 w-full bg-gray-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-green-500" style={{ width: `${Math.min(100, cmoBudgetPercentage)}%` }}></div>
+                    <div className="h-8 w-full rounded-full overflow-hidden" style={{backgroundColor: '#e5e5e5'}}>
+                      <div className="h-full" style={{ 
+                        width: `${Math.min(100, cmoBudgetPercentage)}%`,
+                        backgroundColor: '#3e8c84'
+                      }}></div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="mt-4 bg-blue-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-blue-800 mb-2">Additional Budget for Campaigns and Initiatives</h4>
-                  <p className="text-gray-700 text-sm">
-                    By using a Fractional CMO instead of a full-time team, you free up <span className="font-bold text-green-600">${savingsAmount.toLocaleString()}/year</span> ({(savingsAmount / totalMarketingBudget * 100).toFixed(1)}% of your total marketing budget) for actual marketing campaigns and initiatives.
+                <div className="mt-4 p-4 rounded-lg" style={{backgroundColor: '#f0f9ff', border: '1px solid #3e8c84'}}>
+                  <h4 className="font-medium mb-2" style={{color: '#1B4551'}}>Additional Budget for Campaigns and Initiatives</h4>
+                  <p className="text-black text-sm">
+                    By using a Fractional CMO instead of a full-time team, you free up <span className="font-bold" style={{color: '#3e8c84'}}>${savingsAmount.toLocaleString()}/year</span> ({(savingsAmount / totalMarketingBudget * 100).toFixed(1)}% of your total marketing budget) for actual marketing campaigns and initiatives.
                   </p>
                 </div>
               </div>
             </div>
             
-            {/* Benefits Comparison */}
-            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 mb-8">
-              <h3 className="text-xl font-semibold mb-5" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>
+            {/* Features Comparison */}
+            <div className="bg-white p-6 rounded-xl shadow-md border-2 mb-8" style={{borderColor: '#e5e5e5'}}>
+              <h3 className="text-xl font-semibold mb-5" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>
                 Feature Comparison
               </h3>
               
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y" style={{borderColor: '#e5e5e5'}}>
+                  <thead className="bg-white">
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-blue-800 uppercase tracking-wider" style={{fontFamily: "'Montserrat', sans-serif"}}>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>
                         Feature
                       </th>
-                      <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-blue-800 uppercase tracking-wider" style={{fontFamily: "'Montserrat', sans-serif"}}>
+                      <th scope="col" className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>
                         Full-Time Team
                       </th>
-                      <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-blue-800 uppercase tracking-wider" style={{fontFamily: "'Montserrat', sans-serif"}}>
+                      <th scope="col" className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>
                         Fractional CMO
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y" style={{borderColor: '#e5e5e5'}}>
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">
                         Annual Cost
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-red-600 font-medium">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm font-medium" style={{color: '#dc2626'}}>
                         ${totalStaffCost.toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-green-600 font-medium">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm font-medium" style={{color: '#3e8c84'}}>
                         ${serviceSpend.toLocaleString()}
                       </td>
                     </tr>
-                    <tr className="bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr style={{backgroundColor: '#f9f9f9'}}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">
                         Strategic Marketing Leadership
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="#3e8c84">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="#3e8c84">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                       </td>
                     </tr>
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">
                         Full-Time Availability
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="#3e8c84">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="#dc2626">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                         </svg>
                       </td>
                     </tr>
-                    <tr className="bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr style={{backgroundColor: '#f9f9f9'}}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">
                         Cross-Industry Experience
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="#dc2626">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                         </svg>
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="#3e8c84">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                       </td>
                     </tr>
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">
                         No HR Overhead
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="#dc2626">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                         </svg>
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="#3e8c84">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                       </td>
                     </tr>
-                    <tr className="bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr style={{backgroundColor: '#f9f9f9'}}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">
                         Scalability
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="#dc2626">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                         </svg>
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="#3e8c84">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                       </td>
                     </tr>
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">
                         Access to Marketing Team
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="#3e8c84">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                       </td>
-                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="#3e8c84">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                       </td>
@@ -902,14 +966,18 @@ const MarketingCalculator = () => {
       {/* Industry Benchmarks Tab */}
       {activeTab === 'benchmarks' && (
         <div>
-          <h2 className="text-2xl font-bold mb-6" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Marketing Budget Benchmarks by Industry</h2>
+          <h2 className="text-2xl font-bold mb-6" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>Marketing Budget Benchmarks by Industry</h2>
           
           {/* Industry Selector */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-blue-800 mb-2" style={{fontFamily: "'Montserrat', sans-serif"}}>Select Industry</label>
+            <label className="block text-sm font-medium mb-2" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>Select Industry</label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <button
-                className={`border rounded-md px-3 py-2 text-sm transition-all duration-200 ${selectedIndustry === 'all' ? 'bg-blue-700 border-blue-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                className={`border-2 rounded-md px-3 py-2 text-sm transition-all duration-200 font-medium ${selectedIndustry === 'all' ? 'text-white' : 'text-black hover:bg-gray-100'}`}
+                style={{
+                  backgroundColor: selectedIndustry === 'all' ? '#1B4551' : 'white',
+                  borderColor: selectedIndustry === 'all' ? '#1B4551' : '#e5e5e5'
+                }}
                 onClick={() => setSelectedIndustry('all')}
               >
                 All Industries
@@ -917,7 +985,11 @@ const MarketingCalculator = () => {
               {industryData.map(industry => (
                 <button
                   key={industry.id}
-                  className={`border rounded-md px-3 py-2 text-sm transition-all duration-200 ${selectedIndustry === industry.id ? 'bg-blue-700 border-blue-700 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                  className={`border-2 rounded-md px-3 py-2 text-sm transition-all duration-200 font-medium ${selectedIndustry === industry.id ? 'text-white' : 'text-black hover:bg-gray-100'}`}
+                  style={{
+                    backgroundColor: selectedIndustry === industry.id ? '#1B4551' : 'white',
+                    borderColor: selectedIndustry === industry.id ? '#1B4551' : '#e5e5e5'
+                  }}
                   onClick={() => setSelectedIndustry(industry.id)}
                 >
                   {industry.name}
@@ -927,39 +999,39 @@ const MarketingCalculator = () => {
           </div>
           
           {/* Benchmarks Table */}
-          <div className="overflow-x-auto bg-white shadow-md rounded-xl border border-gray-100 mb-8">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className="overflow-x-auto bg-white shadow-md rounded-xl border-2 mb-8" style={{borderColor: '#e5e5e5'}}>
+            <table className="min-w-full divide-y" style={{borderColor: '#e5e5e5'}}>
+              <thead className="bg-white">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-blue-800 uppercase tracking-wider" style={{fontFamily: "'Montserrat', sans-serif"}}>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>
                     Industry
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-blue-800 uppercase tracking-wider" style={{fontFamily: "'Montserrat', sans-serif"}}>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>
                     B2B Marketing Investment
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-blue-800 uppercase tracking-wider" style={{fontFamily: "'Montserrat', sans-serif"}}>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>
                     B2C Marketing Investment
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-blue-800 uppercase tracking-wider" style={{fontFamily: "'Montserrat', sans-serif"}}>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>
                     Source
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y" style={{borderColor: '#e5e5e5'}}>
                 {industryData
                   .filter(industry => selectedIndustry === 'all' || selectedIndustry === industry.id)
                   .map((industry, index) => (
-                    <tr key={industry.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr key={industry.id} className={index % 2 === 0 ? 'bg-white' : ''} style={{backgroundColor: index % 2 === 0 ? 'white' : '#f9f9f9'}}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">
                         {industry.name}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                         {industry.b2b}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                         {industry.b2c}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                         {industry.source}
                       </td>
                     </tr>
@@ -970,17 +1042,17 @@ const MarketingCalculator = () => {
           </div>
           
           {/* Visualization */}
-          <div className="mt-10 bg-white shadow-md rounded-xl border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Marketing Investment Range by Business Type</h3>
+          <div className="mt-10 bg-white shadow-md rounded-xl border-2 p-6" style={{borderColor: '#e5e5e5'}}>
+            <h3 className="text-lg font-semibold mb-4" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>Marketing Investment Range by Business Type</h3>
             <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
-                <span className="font-medium" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>B2B Companies</span>
-                <span className="text-sm text-gray-600">3-9% of Revenue</span>
+                <span className="font-medium" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>B2B Companies</span>
+                <span className="text-sm text-black">3-9% of Revenue</span>
               </div>
-              <div className="h-8 w-full bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-700" style={{ width: '9%' }}></div>
+              <div className="h-8 w-full rounded-full overflow-hidden" style={{backgroundColor: '#e5e5e5'}}>
+                <div className="h-full" style={{ width: '9%', backgroundColor: '#1B4551' }}></div>
               </div>
-              <div className="flex justify-between text-xs mt-1 text-gray-500">
+              <div className="flex justify-between text-xs mt-1 text-black">
                 <span>0%</span>
                 <span>5%</span>
                 <span>10%</span>
@@ -991,13 +1063,13 @@ const MarketingCalculator = () => {
             
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="font-medium" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>B2C Companies</span>
-                <span className="text-sm text-gray-600">7-18% of Revenue</span>
+                <span className="font-medium" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>B2C Companies</span>
+                <span className="text-sm text-black">7-18% of Revenue</span>
               </div>
-              <div className="h-8 w-full bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-orange-500" style={{ marginLeft: '35%', width: '55%' }}></div>
+              <div className="h-8 w-full rounded-full overflow-hidden" style={{backgroundColor: '#e5e5e5'}}>
+                <div className="h-full" style={{ marginLeft: '35%', width: '55%', backgroundColor: '#3e8c84' }}></div>
               </div>
-              <div className="flex justify-between text-xs mt-1 text-gray-500">
+              <div className="flex justify-between text-xs mt-1 text-black">
                 <span>0%</span>
                 <span>5%</span>
                 <span>10%</span>
@@ -1007,9 +1079,9 @@ const MarketingCalculator = () => {
             </div>
           </div>
           
-          <div className="mt-8 p-5 bg-blue-50 rounded-xl text-sm border border-blue-100">
-            <p className="font-semibold mb-2" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Key Insights:</p>
-            <ul className="list-disc ml-5 mt-2 space-y-2 text-gray-700">
+          <div className="mt-8 mb-8 p-5 rounded-xl text-sm border-2" style={{backgroundColor: '#f0f9ff', borderColor: '#3e8c84'}}>
+            <p className="font-semibold mb-2" style={{color: '#1B4551', fontFamily: "'Lato', sans-serif"}}>Key Insights:</p>
+            <ul className="list-disc ml-5 mt-2 space-y-2 text-black">
               <li>B2C companies typically spend 2-3 times more on marketing than B2B companies in the same industry</li>
               <li>Technology and SaaS companies invest the highest percentage in marketing across both B2B and B2C sectors</li>
               <li>Manufacturing typically has the lowest marketing investment as a percentage of revenue</li>
@@ -1021,96 +1093,20 @@ const MarketingCalculator = () => {
         </div>
       )}
       
-      {/* Sources Tab */}
-      {activeTab === 'sources' && (
-        <div>
-          <h2 className="text-2xl font-bold mb-6" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Sources & Methodology</h2>
-          
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Research Sources</h3>
-            <p className="text-gray-700 mb-4">
-              The recommendations and benchmarks in this calculator are based on the following authoritative industry sources:
-            </p>
-            
-            <div className="space-y-6">
-              {marketingSources.map((source, index) => (
-                <div key={index} className="border border-gray-100 rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition-all duration-300">
-                  <h4 className="font-semibold text-lg" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>{source.title}</h4>
-                  <p className="text-sm text-gray-500 mb-2">{source.organization}</p>
-                  <p className="text-gray-700 mb-2">{source.description}</p>
-                  <a href={source.url} className="text-blue-600 hover:underline text-sm inline-flex items-center" target="_blank" rel="noopener noreferrer">
-                    Visit Source 
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </a>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-4" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Methodology</h3>
-            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-              <h4 className="font-semibold mb-3" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>B2B vs B2C Marketing Investment</h4>
-              <p className="text-gray-700 mb-5">
-                Our recommended investment ranges (3-9% for B2B and 7-18% for B2C) are derived from aggregating multiple industry studies, including the annual CMO Survey, Gartner's CMO Spend Survey, and vertical-specific research. These ranges represent typical investments across industries, with variations based on company size, growth stage, and competitive landscape.
-              </p>
-              
-              <h4 className="font-semibold mb-3" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Growth Strategy Investment</h4>
-              <p className="text-gray-700 mb-5">
-                The growth strategy investment model applies additional funding to the difference between current and target revenue. This approach is based on research showing that companies successfully transitioning to higher revenue targets typically increase marketing investment as a percentage of targeted growth, not just as a percentage of current revenue.
-              </p>
-              
-              <h4 className="font-semibold mb-3" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Media/Services Ratio</h4>
-              <p className="text-gray-700 mb-2">
-                The recommended media to services ratios (ranging from 40/60 to 70/30) are derived from industry best practices and research on marketing ROI optimization. These ratios vary based on business maturity, with emerging businesses typically requiring more strategic services while established businesses with proven channels can allocate more to media.
-              </p>
-              
-              <h4 className="font-semibold mb-3 mt-5" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Fractional CMO vs. Full-Time Team Comparison</h4>
-              <p className="text-gray-700 mb-2">
-                The salary data for marketing professionals is based on industry reports from the Bureau of Labor Statistics, Glassdoor, and Robert Half Salary Guide. State-specific cost adjustments are derived from cost-of-living indices from BestPlaces.net and the Council for Community and Economic Research. The Fractional CMO service cost is based on your calculated Marketing Services budget, creating a direct comparison between traditional staffing and outsourced expertise.
-              </p>
-            </div>
-          </div>
-          
-          <div className="p-5 bg-blue-50 rounded-xl text-sm border border-blue-100 flex items-start">
-            <div className="mr-3 mt-1">
-              <Info className="h-5 w-5 text-blue-700" />
-            </div>
-            <div>
-              <p className="font-medium" style={{color: '#0e3e6f', fontFamily: "'Montserrat', sans-serif"}}>Disclaimer</p>
-              <p className="mt-1 text-gray-700">
-                This calculator provides general guidelines based on industry research. Every business has unique needs and circumstances. We recommend using these figures as a starting point and adjusting based on your specific business objectives, industry dynamics, and historical performance data.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* CTA Box */}
-      <div className="bg-gradient-to-r from-blue-700 to-blue-900 p-8 rounded-xl text-white shadow-lg">
+      <div className="p-8 rounded-xl text-white shadow-lg" style={{background: 'linear-gradient(to right, #1B4551, #3e8c84)'}}>
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="mb-6 md:mb-0 md:mr-10">
             <h3 className="text-2xl font-semibold mb-2">Ready to Save ${savingsAmount.toLocaleString()} on Your Marketing Budget?</h3>
             <p className="opacity-90 max-w-lg">Get the strategic expertise you need at a fraction of the cost with our Fractional CMO service.</p>
           </div>
           <div>
-            <a href="https://riversdx.com" className="whitespace-nowrap px-8 py-3 rounded-lg bg-white text-blue-800 font-medium hover:bg-blue-50 transition-all shadow-lg">
+            <a href="https://riversdx.com" className="whitespace-nowrap px-8 py-3 rounded-lg bg-white font-medium hover:bg-gray-100 transition-all shadow-lg" style={{color: '#1B4551'}}>
               Schedule Consultation
             </a>
           </div>
         </div>
       </div>
-      
-      {/* Footer Section */}
-      <footer className="mt-12 pt-6 border-t border-gray-200">
-        <div className="flex flex-col md:flex-row justify-center items-center">
-          <div className="mb-4 md:mb-0">
-            <p className="text-gray-500 text-sm">&copy; {new Date().getFullYear()}. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

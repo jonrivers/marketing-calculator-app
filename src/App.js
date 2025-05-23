@@ -3,7 +3,7 @@ import MarketingCalculator from './components/MarketingCalculator';
 
 function App() {
   return (
-    <div className="App bg-gray-100 min-h-screen py-8">
+    <div className="App bg-white min-h-screen py-8">
       <MarketingCalculator />
     </div>
   );
